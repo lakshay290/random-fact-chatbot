@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Random Fact Chatbot</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0f0f0f, #1e1e2f);
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+      padding: 20px;
+      background-image: url('https://img.freepik.com/free-vector/dark-hexagonal-background-with-gradient-color_79603-1409.jpg?t=st=1743874118~exp=1743877718~hmac=d1cb9dcee65dde67a92ba12c13c695f5724b53a886f147937c65c919c2c01ba2&w=1380');
+      background-size: cover;
+    }
+    .regno {
+      font-size: 10px;
+      color: white;
+      position: absolute;
+      top: 10px;
+      left: 20px;
+    }
+
+    .header {
+      font-size: 32px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #00ffcc;
+      text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc;
+    }
+
+    .chat-display {
+      flex-grow: 1;
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #00ffcc;
+      padding: 15px;
+      overflow-y: auto;
+      border-radius: 12px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .chat-message {
+      margin-bottom: 10px;
+    }
+
+    .bot-message {
+      color: #00ffff;
+    }
+
+    .user-message {
+      color: #ffd700;
+      text-align: right;
+    }
+
+    .chat-input-area {
+      display: flex;
+      margin-top: 10px;
+    }
+
+    .chat-input {
+      flex-grow: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .send-btn {
+      padding: 12px 20px;
+      margin-left: 10px;
+      background: #00ffcc;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .send-btn:hover {
+      background: #00ffaa;
+    }
+
+    .logo {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 60px;
+      height: auto;
+      opacity: 0.9;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #00ffcc;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="header">🎮 Random Fact Chatbot 🤖</div>
+    <div class="regno">REG NO 12324681</div>
+    <div class="chat-display" id="chatDisplay"></div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" class="chat-input" placeholder="Ask me something crazy!">
+      <button class="send-btn" onclick="handleUserInput()">Send</button>
+    </div>
+  </div>
+  <img src="https://seeklogo.com/images/L/lpu-sae-india-collegiate-club-logo-29B436A816-seeklogo.com.png" alt="LPU SAE Club" class="logo">
+
+  <script>
+    const facts = {
+      animal: [
+        "A group of flamingos is called a 'flamboyance'! 🧹",
+        "Octopuses have THREE hearts and BLUE blood! 🐙",
+        "Wombats poop in CUBE shapes! 💩",
+        "Mantis shrimp can see colors humans CAN'T EVEN IMAGINE! 🤐",
+        "Cows have BEST FRIENDS and get stressed when separated! 🐄"
+      ],
+      science: [
+        "If you could fold a piece of paper 42 times, it would reach THE MOON! 🌙",
+        "A day on Venus is LONGER than a YEAR on Venus! 🪐",
+        "Bananas are BERRIES, but strawberries AREN'T! 🍌",
+        "Stomach acid is strong enough to DISSOLVE METAL! 🧪",
+        "A bolt of lightning is FIVE TIMES HOTTER than the sun! ⚡"
+      ],
+      history: [
+        "In ancient Egypt, servants were covered in HONEY to attract flies AWAY from the pharaoh! 🍯",
+        "The shortest war was between Britain and Zanzibar in 1896, lasting 38 MINUTES! ⏱️",
+        "Cleopatra lived CLOSER to the iPhone than to the pyramids! 📱",
+        "In 1518, a 'dancing plague' caused people to dance until they DIED! 💃",
+        "Ancient Romans used URINE as mouthwash! 🤢"
+      ],
+      space: [
+        "There's a planet made of DIAMONDS that's twice the size of Earth! 💎",
+        "The footprints on the Moon will last for 100 MILLION YEARS! 👣",
+        "It RAINS DIAMONDS on Saturn and Jupiter! 💎",
+        "Venus spins in the OPPOSITE direction! 🪐",
+        "The Sun makes up 99.86% of the solar system! ☀️"
+      ],
+      food: [
+        "Honey NEVER spoils. You can eat 3000-year-old honey! 🍯",
+        "Ketchup was sold as MEDICINE in the 1830s! 🧩",
+        "Apples float in water because they're 25% AIR! 🍎",
+        "Chocolate was once CURRENCY by the Aztecs! 💰",
+        "Carrots were originally PURPLE! 🥕"
+      ],
+      gaming: [
+        "The PS2 is the BEST-SELLING console of all time! 🎮",
+        "The FIRST video game Easter egg appeared in 1979! 🥚",
+        "Minecraft has sold over 238 MILLION copies! ⛏️",
+        "The term 'Easter Egg' came from a 1979 movie! 🎬",
+        "Nintendo was founded in 1889 as a card company! 🃏"
+      ]
+    };
+
+    const chatDisplay = document.getElementById('chatDisplay');
+    const inputBox = document.getElementById('chatInput');
+
+    function appendMessage(text, sender) {
+      const message = document.createElement('div');
+      message.className = `chat-message ${sender}-message`;
+      message.innerText = text;
+      chatDisplay.appendChild(message);
+      chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    function getRandomFact(category) {
+      const cat = facts[category.toLowerCase()];
+      if (!cat) return "Sorry, I don't know facts about that! Try: animal, science, history, space, food, or gaming.";
+      return cat[Math.floor(Math.random() * cat.length)];
+    }
+
+    function handleUserInput() {
+      const input = inputBox.value.trim();
+      if (input === '') return;
+      appendMessage(input, 'user');
+
+      const keyword = Object.keys(facts).find(cat => input.toLowerCase().includes(cat));
+      const botResponse = keyword ? getRandomFact(keyword) : "Try asking about: animal, science, history, space, food, or gaming.";
+      setTimeout(() => appendMessage(botResponse, 'bot'), 500);
+      inputBox.value = '';
+    }
+
+    inputBox.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') handleUserInput();
+    });
+  </script>
+</body>
+</html>
